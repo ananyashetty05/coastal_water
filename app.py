@@ -20,23 +20,49 @@ st.set_page_config(layout="wide")
 st.title("🌊 Coastal Water Quality Monitoring System")
 
 # =========================
-# 🌍 WORLD MAP
+# WORLD MAP WITH HIGHLIGHT
 # =========================
 st.subheader("🌍 Global Water Quality Map")
 
-if "Country" in df.columns:
-    fig_map = px.scatter_geo(
-        df,
-        locations="Country",
-        locationmode="country names",
-        color="CCME_WQI",
-        hover_name="Area",
-        title="Water Quality by Country"
-    )
-    st.plotly_chart(fig_map)
-else:
-    st.warning("Country data not available")
+# Aggregate your data
+map_df = df.groupby("Country")["CCME_Values"].mean().reset_index()
 
+# Base map (all countries in grey)
+fig_map = px.choropleth(
+    locations=[],
+)
+
+
+fig_map = px.choropleth(
+    map_df,
+    locations="Country",
+    locationmode="country names",
+    color="CCME_Values",
+    color_continuous_scale="RdYlGn",
+)
+
+
+fig_map.update_geos(
+    showland=True,
+    landcolor="lightgrey",   # all countries visible
+    showcountries=True,
+    countrycolor="white",
+    showframe=False,
+    showcoastlines=False,
+    projection_type="natural earth",
+    bgcolor="#0e1117"
+)
+
+# Layout fixes
+fig_map.update_layout(
+    dragmode=False,
+    height=500,
+    margin={"r":0,"t":0,"l":0,"b":0},
+    paper_bgcolor="#0e1117",
+    font=dict(color="white"),
+)
+
+st.plotly_chart(fig_map, use_container_width=True)
 # =========================
 # 📊 VISUALIZATIONS
 # =========================
@@ -169,15 +195,132 @@ if "Date" in df.columns:
     st.plotly_chart(fig3)
 
 # =========================
-# 📂 UPLOAD DATA
+# 📂 SMART UPLOAD SYSTEM
 # =========================
-st.subheader("📂 Upload Your Dataset")
+st.subheader("📂 Upload Dataset for Analysis")
 
-uploaded_file = st.file_uploader("Upload CSV")
+uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
 
 if uploaded_file:
     new_df = pd.read_csv(uploaded_file)
-    st.write(new_df.head())
+    new_df.columns = new_df.columns.str.strip()
+
+    st.success("Dataset uploaded successfully!")
+
+    # =========================
+    # 🔄 STANDARDIZE DATA
+    # =========================
+    new_df = new_df.rename(columns={
+        "country": "Country",
+        "temp": "Temperature (cel)",
+        "temperature": "Temperature (cel)",
+        "ph": "pH (ph units)",
+        "oxygen": "Dissolved Oxygen (mg/l)",
+        "bod": "Biochemical Oxygen Demand (mg/l)",
+        "ammonia": "Ammonia (mg/l)",
+        "nitrate": "Nitrate (mg/l)",
+        "nitrogen": "Nitrogen (mg/l)",
+        "phosphate": "Orthophosphate (mg/l)"
+    })
+
+    # Add missing columns if needed
+    required_cols = [
+        'Ammonia (mg/l)',
+        'Biochemical Oxygen Demand (mg/l)',
+        'Dissolved Oxygen (mg/l)',
+        'Orthophosphate (mg/l)',
+        'pH (ph units)',
+        'Temperature (cel)',
+        'Nitrogen (mg/l)',
+        'Nitrate (mg/l)'
+    ]
+
+    for col in required_cols:
+        if col not in new_df.columns:
+            new_df[col] = new_df.select_dtypes(include=np.number).mean(axis=1)
+
+    # =========================
+    # 📊 CREATE WQI IF NOT PRESENT
+    # =========================
+    if "CCME_Values" not in new_df.columns:
+        new_df['CCME_Values'] = (
+            100
+            - (new_df['Biochemical Oxygen Demand (mg/l)'] * 2)
+            - (new_df['Ammonia (mg/l)'] * 3)
+            - (new_df['Nitrate (mg/l)'] * 2)
+        ).clip(0, 100)
+
+    if "CCME_WQI" not in new_df.columns:
+        def classify_wqi(val):
+            if val >= 95:
+                return "Excellent"
+            elif val >= 80:
+                return "Good"
+            elif val >= 65:
+                return "Fair"
+            elif val >= 45:
+                return "Marginal"
+            else:
+                return "Poor"
+
+        new_df['CCME_WQI'] = new_df['CCME_Values'].apply(classify_wqi)
+
+    # =========================
+    # 📊 SHOW DATA
+    # =========================
+    st.write("Preview:")
+    st.dataframe(new_df.head())
+
+    # =========================
+    # 📊 VISUALIZATIONS
+    # =========================
+    st.subheader("📊 Visualizations")
+
+    fig1 = px.histogram(new_df, x="CCME_WQI", title="Water Quality Distribution")
+    st.plotly_chart(fig1)
+
+    fig2 = px.scatter(
+        new_df,
+        x="Nitrate (mg/l)",
+        y="Nitrogen (mg/l)",
+        color="CCME_WQI",
+        title="Pollution Correlation"
+    )
+    st.plotly_chart(fig2)
+
+    # =========================
+    # 🌍 MAP (FULL WORLD)
+    # =========================
+    if "Country" in new_df.columns:
+        map_df = new_df.groupby("Country")["CCME_Values"].mean().reset_index()
+
+        fig_map = px.choropleth(
+            map_df,
+            locations="Country",
+            locationmode="country names",
+            color="CCME_Values",
+            color_continuous_scale="RdYlGn"
+        )
+
+        fig_map.update_geos(
+            showland=True,
+            landcolor="lightgrey",
+            showcountries=True,
+            countrycolor="white",
+            projection_type="natural earth"
+        )
+
+        st.plotly_chart(fig_map, use_container_width=True)
+
+    # =========================
+    # 🔮 MODEL PREDICTION
+    # =========================
+    if all(f in new_df.columns for f in features):
+        sample = new_df[features].iloc[0:1]
+        pred = model.predict(sample)
+        result = le.inverse_transform(pred)
+
+        st.success(f"Prediction for uploaded data: {result[0]}")
 
 # =========================
 # 🤖 SIMPLE CHATBOT
