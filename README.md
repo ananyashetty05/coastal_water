@@ -68,37 +68,33 @@ UI & Experience
 
 ________________________________________________________________________________________________________________________________________________
 
-
-########## *folder structure* ############
-
-coastalwatch/
-│
-├── app.py                          # entry point, just navigation
+CoastalWatch/
+├── app.py
 │
 ├── pages/
-│   ├── 01_upload.py                # upload & sample data
-│   ├── 02_map.py                   # location map view
-│   ├── 03_analytics.py             # dashboard & charts
-│   └── 04_predictions.py          # 7-day forecast
+│   ├── 01_upload.py
+│   ├── 02_map.py
+│   ├── 03_analytics.py
+│   └── 04_predictions.py
 │
 ├── core/
 │   ├── __init__.py
-│   ├── state.py                    # session state helpers
-│   ├── classifier.py               # water quality scoring
-│   ├── processor.py                # data loading & stats
-│   └── predictor.py                # linear regression forecast
+│   ├── state.py
+│   ├── processor.py
+│   ├── classifier.py
+│   └── predictor.py
 │
 ├── components/
 │   ├── __init__.py
-│   ├── metric_row.py               # the 5 stat cards row
-│   ├── quality_badge.py            # Safe / Moderate / Poor badge
-│   └── summary_table.py           # min/max/avg table
+│   ├── metric_row.py
+│   ├── quality_badge.py
+│   └── summary_table.py
 │
 ├── data/
-│   └── sample_data.csv             # pre-generated sample (optional)
+│   └── sample_data.csv
 │
 ├── assets/
-│   └── style.css                   # custom CSS overrides
+│   └── style.css
 │
 ├── requirements.txt
 └── README.md
