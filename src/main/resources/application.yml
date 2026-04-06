@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:habitflowdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+server:
+  port: 8080
+huggingface:
+  api:
+    key: ${HUGGINGFACE_API_KEY:}
+  model: Qwen/Qwen2.5-7B-Instruct-1M:featherless-ai
+security:
+  jwt:
+    secret: change-me-please
+    expiration: 3600000

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HabitFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="brand-mark">🌱</div>
+        <div>
+        <p class="eyebrow">Personal Growth Dashboard</p>
+        <h1>HabitFlow</h1>
+        </div>
+      </div>
+      <div class="topbar-meta">
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          Spring Boot Connected
+        </div>
+        <p id="todayLabel" class="today-label"></p>
+      </div>
+    </header>
+
+    <main class="main-layout">
+      <section class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">Build consistency that compounds</p>
+          <h2>Track habits, finish tasks, and let AI coach your next move.</h2>
+          <p class="hero-text">
+            A sharper daily operating system for routines, tasks, notes, and momentum.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#habitsSection">Start With Habits</a>
+            <a class="ghost-link" href="#aiSection">Ask AI Coach</a>
+          </div>
+        </div>
+        <div class="hero-highlight">
+          <p class="mini-label">Focus Score</p>
+          <div class="hero-score">
+            <span id="focusScore">0</span>
+            <small>/100</small>
+          </div>
+          <p id="focusMessage" class="muted-copy">Loading your rhythm...</p>
+        </div>
+      </section>
+
+      <section class="streak-banner">
+        <div class="streak-fire">🔥</div>
+        <div class="streak-copy">
+          <strong>Current momentum</strong>
+          <span>Keep stacking completions to build a stronger weekly rhythm.</span>
+        </div>
+        <div id="heroStreak" class="streak-value">0</div>
+      </section>
+
+      <section class="stats-grid" aria-label="Overview">
+        <article class="stat-card">
+          <p>Total Habits</p>
+          <strong id="statHabits">0</strong>
+          <span id="statHabitsMeta">No routines yet</span>
+        </article>
+        <article class="stat-card accent-coral">
+          <p>Total Tasks</p>
+          <strong id="statTasks">0</strong>
+          <span id="statTasksMeta">0 completed</span>
+        </article>
+        <article class="stat-card accent-mint">
+          <p>Active Streaks</p>
+          <strong id="statStreaks">0</strong>
+          <span id="statStreaksMeta">Keep showing up</span>
+        </article>
+        <article class="stat-card accent-gold">
+          <p>Notes Captured</p>
+          <strong id="statNotes">0</strong>
+          <span id="statNotesMeta">Ideas stay visible</span>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel analytics-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Overview</p>
+              <h3>Performance Snapshot</h3>
+            </div>
+          </div>
+          <div id="dashboardContent" class="metric-stack"></div>
+        </article>
+
+        <article class="panel momentum-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Momentum</p>
+              <h3>Today's Pulse</h3>
+            </div>
+          </div>
+          <div class="progress-ring-card">
+            <div class="progress-ring">
+              <div class="progress-ring-inner">
+                <strong id="completionPercent">0%</strong>
+                <span>Done</span>
+              </div>
+            </div>
+            <div class="pulse-copy pulse-summary-card">
+              <p id="completionSummary">No activity yet.</p>
+              <p class="pulse-subtext">Complete a task or grow a streak to lift your score.</p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section id="habitsSection" class="feature-grid">
+        <article class="panel wide-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Habits</p>
+              <h3>Rituals That Build Momentum</h3>
+            </div>
+            <button id="suggestHabitBtn" class="panel-action" type="button">Suggest With AI</button>
+          </div>
+          <div class="section-label">Today's Habits</div>
+          <div id="suggestionBanner" class="info-banner hidden"></div>
+          <div id="habitList" class="card-list"></div>
+        </article>
+
+        <article class="panel form-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Create</p>
+              <h3>New Habit</h3>
+            </div>
+          </div>
+          <form id="habitForm" class="stack-form">
+            <label>
+              Habit Name
+              <input id="habitInput" type="text" placeholder="Read 20 pages" />
+            </label>
+            <label>
+              Frequency
+              <select id="habitFrequency">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="weekdays">Weekdays</option>
+              </select>
+            </label>
+            <button class="primary-button" type="submit">Add Habit</button>
+          </form>
+        </article>
+      </section>
+
+      <section class="feature-grid dual-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Tasks</p>
+              <h3>Execution Queue</h3>
+            </div>
+          </div>
+          <form id="taskForm" class="inline-form">
+            <input id="taskInput" type="text" placeholder="Finish UI polish" />
+            <button class="primary-button" type="submit">Add Task</button>
+          </form>
+          <div id="taskList" class="list-stack"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Notes</p>
+              <h3>Capture Insights Fast</h3>
+            </div>
+          </div>
+          <form id="noteForm" class="stack-form">
+            <textarea id="noteInput" placeholder="Write an insight, blocker, or quick reflection..."></textarea>
+            <button class="primary-button" type="submit">Save Note</button>
+          </form>
+          <div id="noteList" class="note-stack"></div>
+        </article>
+      </section>
+
+      <section id="aiSection" class="panel ai-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">AI Coach</p>
+            <h3>Ask For Clarity, Motivation, or Habit Ideas</h3>
+          </div>
+        </div>
+        <div class="ai-layout">
+          <div class="ai-prompts">
+            <button class="prompt-chip" data-prompt="I missed two habits today. Help me recover tomorrow.">Recovery Plan</button>
+            <button class="prompt-chip" data-prompt="Suggest one healthy habit I can start this week.">Healthy Habit</button>
+            <button class="prompt-chip" data-prompt="Motivate me to stay consistent with my routine.">Stay Consistent</button>
+          </div>
+          <textarea id="ai-input" placeholder="Tell the AI what you need help with..."></textarea>
+          <button id="askAiBtn" class="primary-button" type="button">Ask AI</button>
+          <pre id="ai-output">Your AI guidance will appear here.</pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
